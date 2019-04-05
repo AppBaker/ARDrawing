@@ -15,6 +15,21 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     /// Visualisation planes placed when detecting planes
     var planeNodes = [SCNNode]()
     
+    /// Coordinate of last placed point
+    var lastObjectPlasedPoint: CGPoint?
+    
+    /// Minimum distance between nearby points (2D coordinates )
+    let touchDistanceThreshold = CGFloat(40)
+    
+    /// Toggle plane visualisation
+    var showPlaneOverlay = false {
+        didSet {
+            planeNodes.forEach { (plane) in
+                plane.isHidden = !showPlaneOverlay
+            }
+        }
+    }
+    
     
     enum ObjectPlacementMode {
         case freeform, plane, image
@@ -24,7 +39,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadConfiguration()
+        reloadConfiguration(removeAnchors: false)
         sceneView.debugOptions = [.showFeaturePoints]
         
         
@@ -34,7 +49,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadConfiguration()
+        reloadConfiguration(removeAnchors: false)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -46,10 +61,13 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         switch sender.selectedSegmentIndex {
         case 0:
             objectMode = .freeform
+            showPlaneOverlay = false
         case 1:
             objectMode = .plane
+            showPlaneOverlay = true
         case 2:
             objectMode = .image
+            showPlaneOverlay = false
         default:
             break
         }
@@ -75,33 +93,28 @@ extension ViewController: OptionsViewControllerDelegate {
     
     func togglePlaneVisualization() {
         dismiss(animated: true, completion: nil)
+        showPlaneOverlay.toggle()
     }
     
     func undoLastObject() {
-            placedNodes.last?.removeFromParentNode()
-            placedNodes.removeLast()
+        guard let lastNode = placedNodes.last else {
+            dismiss(animated: true, completion: nil)
+            return }
+        lastNode.removeFromParentNode()
+        placedNodes.removeLast()
     }
     
     /// Discard all actions
     func resetScene() {
-        sceneView.session.pause()
-        
-        planeNodes.forEach { (plane) in
-            plane.removeFromParentNode()
-        }
-        placedNodes.forEach { (node) in
-            node.removeFromParentNode()
-        }
-        planeNodes.removeAll()
-        placedNodes.removeAll()
-        
-        loadConfiguration()
         dismiss(animated: true, completion: nil)
+        reloadConfiguration()
+
     }
 }
 
 // MARK: - View Controller Touches
 extension ViewController {
+    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         
@@ -113,17 +126,44 @@ extension ViewController {
             addNodeInFront(node)
         case .plane:
             let point = touch.location(in: sceneView)
-            let results = sceneView.hitTest(point, types: .existingPlaneUsingExtent)
-            guard let result = results.first else { return }
-            
-            node.simdTransform = result.worldTransform
-            addNodeToSceneView(node)
-            
+            addNode(node, to: point)
             break
         case .image:
             break
         }
     }
+    
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesMoved(touches, with: event)
+        guard let selectedNode = selectedNode else { return }
+        guard let touch = touches.first else { return }
+        guard let lastTouchPoint = lastObjectPlasedPoint else { return }
+        
+        let newTouchPoint = touch.location(in: sceneView)
+        
+        let deltaX = newTouchPoint.x - lastTouchPoint.x
+        let deltaY = newTouchPoint.y - lastTouchPoint.y
+        let distanceSquare = deltaX * deltaX + deltaY * deltaY
+        
+        guard touchDistanceThreshold * touchDistanceThreshold < distanceSquare else { return }
+        
+        switch objectMode {
+        case .freeform:
+            break
+        case .image:
+            break
+        case .plane:
+            
+            addNode(selectedNode, to: newTouchPoint)
+            break
+        }
+    }
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        lastObjectPlasedPoint = nil
+    }
+    
 }
 
 // MARK: - Placement Methods
@@ -134,11 +174,34 @@ extension ViewController {
     /// - Parameters:
     ///   - node: node which will be added
     ///   - parentNode: parent node to which the node to be added
-    func addNode(_  node: SCNNode, to parentNode: SCNNode) {
-        let cloneNode = node.clone()
+    func addNode(_  node: SCNNode, to parentNode: SCNNode, isFloor: Bool = false) {
+        let cloneNode = isFloor ? node : node.clone()
         parentNode.addChildNode(cloneNode)
-        placedNodes.append(cloneNode)
+        if isFloor {
+            planeNodes.append(cloneNode)
+        } else {
+            placedNodes.append(cloneNode)
+        }
+    }
+    
+    /// Add a node using a point on the screen
+    ///
+    /// - Parameters:
+    ///   - node: selected node to add
+    ///   - point: point at the screen to use
+    func addNode(_ node: SCNNode, to point: CGPoint) {
         
+        let results = sceneView.hitTest(point, types: .existingPlaneUsingExtent)
+        guard let match = results.first else { return }
+        
+        let transform = match.worldTransform
+        let translate = transform.columns.3
+        let x = translate.x
+        let y = translate.y
+        let z = translate.z
+        node.position = SCNVector3(x, y, z)
+        addNodeToSceneRoot(node)
+        lastObjectPlasedPoint = point
     }
     
     /// Places object defined by node at 20 cm befor the camera
@@ -151,16 +214,34 @@ extension ViewController {
         var translation = matrix_identity_float4x4
         translation.columns.3.z = -0.2
         node.simdTransform =  matrix_multiply(currentFrame.camera.transform, translation)
-        addNodeToSceneView(node)
+        addNodeToSceneRoot(node)
     }
     
     /// Clones and adds an object defined by node to scene root
     ///
     /// - Parameter node: SCNNode which will be added
-    func addNodeToSceneView(_ node: SCNNode) {
+    func addNodeToSceneRoot(_ node: SCNNode) {
         let rootNode = sceneView.scene.rootNode
         addNode(node, to: rootNode)
         
+    }
+    
+    /// Create visualisation  plane
+    ///
+    /// - Parameter planeAnchor: Detected anchor
+    /// - Returns: node of created  visualisation  plane
+    func createFloor(planeAnchor: ARPlaneAnchor) -> SCNNode {
+        let node = SCNNode()
+        let extent = planeAnchor.extent
+        
+        let plane = SCNPlane(width: CGFloat(extent.x), height: CGFloat(extent.z))
+        plane.materials.first?.diffuse.contents = UIColor.cyan
+        node.geometry = plane
+        node.eulerAngles.x = -Float.pi/2
+        node.name = "Plane"
+        node.opacity = 0.25
+        
+        return node
     }
     
     /// Plane node AR anchor has added to the scene
@@ -169,8 +250,9 @@ extension ViewController {
     ///   - node: node which was added
     ///   - anchor: AR plane  anchor which defines the plane found
     func nodeAdded(_ node: SCNNode, for anchor: ARPlaneAnchor) {
-        guard let selectedNode = selectedNode else { return }
-        addNode(selectedNode, to: node)
+        let floor = createFloor(planeAnchor: anchor)
+        floor.isHidden = !showPlaneOverlay
+        addNode(floor, to: node, isFloor: true)
     }
     /// Image node AR anchor has added to the scene
     ///
@@ -216,38 +298,32 @@ extension ViewController {
     }
 }
 
-// MARK: - Plane Detection Methods
-extension ViewController {
-    
-    /// Create color plane to detected plane
-    ///
-    /// - Parameter planeAnchor: Detected anchor
-    /// - Returns: Color plane
-    func createFloor(planeAnchor: ARPlaneAnchor) -> SCNNode {
-        let node = SCNNode()
-        let extent = planeAnchor.extent
-        
-        let plane = SCNPlane(width: CGFloat(extent.x), height: CGFloat(extent.z))
-        plane.materials.first?.diffuse.contents = UIColor.cyan
-        node.geometry = plane
-        node.eulerAngles.x = -Float.pi/2
-        node.name = "Plane"
-        node.opacity = 0.25
-        
-        return node
-    }
-    
-}
-
 // MARK: - Configuration Methods
 extension ViewController {
-    func loadConfiguration() {
+    func reloadConfiguration(removeAnchors: Bool = true) {
 
-        let images = ARReferenceImage.referenceImages(inGroupNamed: "AR Resources" , bundle: nil)
-        configuration.detectionImages = images
         configuration.planeDetection = .horizontal
         
-        sceneView.session.run(configuration)
+        let images = ARReferenceImage.referenceImages(inGroupNamed: "AR Resources" , bundle: nil)
+        configuration.detectionImages = objectMode == .image ?  images : nil
+        
+        let options: ARSession.RunOptions
+        
+        if removeAnchors {
+            options = [.removeExistingAnchors]
+            for node in planeNodes {
+                node.removeFromParentNode()
+            }
+            planeNodes.removeAll()
+            for node in placedNodes {
+                node.removeFromParentNode()
+            }
+            placedNodes.removeAll()
+        } else {
+            options = []
+        }
+        
+        sceneView.session.run(configuration, options: options)
   
         }
 }
