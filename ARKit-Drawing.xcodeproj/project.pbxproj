@@ -22,6 +22,13 @@
 		E40FC44B2255A65F00BE57F1 /* fon.png in Resources */ = {isa = PBXBuildFile; fileRef = E40FC44A2255A65F00BE57F1 /* fon.png */; };
 		E4327667225463CE00BEC286 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = E4327666225463CE00BEC286 /* README.md */; };
 		E432766A2254640200BEC286 /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = E43276692254640200BEC286 /* LICENSE.txt */; };
+		E492595E225A2A4E008CED11 /* FocusSquareSegment.swift in Sources */ = {isa = PBXBuildFile; fileRef = E492595C225A2A4E008CED11 /* FocusSquareSegment.swift */; };
+		E492595F225A2A4E008CED11 /* FocusSquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = E492595D225A2A4E008CED11 /* FocusSquare.swift */; };
+		E4925962225A2DBA008CED11 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4925961225A2DB9008CED11 /* Utilities.swift */; };
+		E4925966225A70CA008CED11 /* VIewController+FocusSquare.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4925965225A70CA008CED11 /* VIewController+FocusSquare.swift */; };
+		E492596A225A7173008CED11 /* VirtualObjectLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4925968225A7173008CED11 /* VirtualObjectLoader.swift */; };
+		E492596B225A7173008CED11 /* VirtualObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4925969225A7173008CED11 /* VirtualObject.swift */; };
+		E492596F225A721A008CED11 /* VirtualObjectARView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E492596D225A721A008CED11 /* VirtualObjectARView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +49,13 @@
 		E40FC44A2255A65F00BE57F1 /* fon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fon.png; sourceTree = "<group>"; };
 		E4327666225463CE00BEC286 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E43276692254640200BEC286 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		E492595C225A2A4E008CED11 /* FocusSquareSegment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FocusSquareSegment.swift; sourceTree = "<group>"; };
+		E492595D225A2A4E008CED11 /* FocusSquare.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FocusSquare.swift; sourceTree = "<group>"; };
+		E4925961225A2DB9008CED11 /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		E4925965225A70CA008CED11 /* VIewController+FocusSquare.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "VIewController+FocusSquare.swift"; sourceTree = "<group>"; };
+		E4925968225A7173008CED11 /* VirtualObjectLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VirtualObjectLoader.swift; sourceTree = "<group>"; };
+		E4925969225A7173008CED11 /* VirtualObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VirtualObject.swift; sourceTree = "<group>"; };
+		E492596D225A721A008CED11 /* VirtualObjectARView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VirtualObjectARView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -76,8 +90,12 @@
 			children = (
 				BEDB2ED9200EABAD001C6BBC /* AppDelegate.swift */,
 				BEDB2EDD200EABAD001C6BBC /* ViewController.swift */,
+				E4925965225A70CA008CED11 /* VIewController+FocusSquare.swift */,
 				BEDB2EEF200ECC4C001C6BBC /* BasicShape.swift */,
 				BEDB2EDF200EABAD001C6BBC /* Main.storyboard */,
+				E4925967225A7173008CED11 /* Virtual Objects */,
+				E4925960225A2DB9008CED11 /* Utilities */,
+				E492595B225A2A4E008CED11 /* Focus Square */,
 				BEDB2EF1200ECF14001C6BBC /* Options */,
 				BEDB2EDB200EABAD001C6BBC /* models.scnassets */,
 				BEDB2EE2200EABAD001C6BBC /* Assets.xcassets */,
@@ -108,6 +126,33 @@
 				E43276692254640200BEC286 /* LICENSE.txt */,
 			);
 			path = LICENSE;
+			sourceTree = "<group>";
+		};
+		E492595B225A2A4E008CED11 /* Focus Square */ = {
+			isa = PBXGroup;
+			children = (
+				E492595C225A2A4E008CED11 /* FocusSquareSegment.swift */,
+				E492595D225A2A4E008CED11 /* FocusSquare.swift */,
+			);
+			path = "Focus Square";
+			sourceTree = "<group>";
+		};
+		E4925960225A2DB9008CED11 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				E4925961225A2DB9008CED11 /* Utilities.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		E4925967225A7173008CED11 /* Virtual Objects */ = {
+			isa = PBXGroup;
+			children = (
+				E492596D225A721A008CED11 /* VirtualObjectARView.swift */,
+				E4925968225A7173008CED11 /* VirtualObjectLoader.swift */,
+				E4925969225A7173008CED11 /* VirtualObject.swift */,
+			);
+			path = "Virtual Objects";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -188,11 +233,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E492596F225A721A008CED11 /* VirtualObjectARView.swift in Sources */,
 				BEDB2EDE200EABAD001C6BBC /* ViewController.swift in Sources */,
 				BE915EAB20105C1D00A251FD /* OptionsContainerViewController.swift in Sources */,
+				E4925966225A70CA008CED11 /* VIewController+FocusSquare.swift in Sources */,
 				BEDB2EDA200EABAD001C6BBC /* AppDelegate.swift in Sources */,
 				5519DC5720238B6000B1008D /* OptionSelectorViewController.swift in Sources */,
 				BE618F32203E31B8005EC6F1 /* UIViewController+Extensions.swift in Sources */,
+				E492595F225A2A4E008CED11 /* FocusSquare.swift in Sources */,
+				E492596A225A7173008CED11 /* VirtualObjectLoader.swift in Sources */,
+				E492596B225A7173008CED11 /* VirtualObject.swift in Sources */,
+				E4925962225A2DBA008CED11 /* Utilities.swift in Sources */,
+				E492595E225A2A4E008CED11 /* FocusSquareSegment.swift in Sources */,
 				BEDB2EF0200ECC4C001C6BBC /* BasicShape.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

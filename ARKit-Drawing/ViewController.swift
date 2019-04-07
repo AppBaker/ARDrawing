@@ -4,7 +4,12 @@ import ARKit
 
 class ViewController: UIViewController, ARSCNViewDelegate {
 
-    @IBOutlet var sceneView: ARSCNView!
+    @IBOutlet var sceneView: VirtualObjectARView!
+    
+    @IBOutlet weak var plusButton: UIButton!
+    @IBOutlet weak var minusButton: UIButton!
+    
+    
     let configuration = ARWorldTrackingConfiguration()
     
     /// Node selected by user
@@ -29,7 +34,17 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             }
         }
     }
+    var focusSquare = FocusSquare()
     
+    var session: ARSession {
+        return sceneView.session
+    }
+    let updateQueue = DispatchQueue(label: "com.example.apple-samplecode.arkitexample.serialSceneKitQueue")
+    
+    var screenCenter: CGPoint {
+        let bounds = sceneView.bounds
+        return CGPoint(x: bounds.midX, y: bounds.midY)
+    }
     
     enum ObjectPlacementMode {
         case freeform, plane, image
@@ -41,7 +56,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         super.viewDidLoad()
         reloadConfiguration(removeAnchors: false)
         sceneView.debugOptions = [.showFeaturePoints]
-        
+        sceneView.scene.rootNode.addChildNode(focusSquare)
+        focusSquare.isHidden = true
         
         sceneView.delegate = self
         sceneView.autoenablesDefaultLighting = true
@@ -56,22 +72,46 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         super.viewWillDisappear(animated)
         sceneView.session.pause()
     }
+    
+    
 
     @IBAction func changeObjectMode(_ sender: UISegmentedControl) {
         switch sender.selectedSegmentIndex {
         case 0:
             objectMode = .freeform
             showPlaneOverlay = false
+            focusSquare.isHidden = true
         case 1:
             objectMode = .plane
             showPlaneOverlay = true
+            focusSquare.isHidden = false
         case 2:
             objectMode = .image
             showPlaneOverlay = false
+            focusSquare.isHidden = true
         default:
             break
         }
     }
+    
+    @IBAction func plusButtonPressed(_ sender: UIButton) {
+        
+        guard let node = selectedNode else { return }
+        
+        switch objectMode {
+        case .freeform:
+            addNodeInFront(node)
+        case .plane:
+            addNode(node, to: screenCenter)
+            break
+        case .image:
+            break
+        }
+        
+    }
+    @IBAction func minusButtonPressed(_ sender: UIButton) {
+    }
+    
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "showOptions" {
@@ -234,12 +274,15 @@ extension ViewController {
         let node = SCNNode()
         let extent = planeAnchor.extent
         
+        
         let plane = SCNPlane(width: CGFloat(extent.x), height: CGFloat(extent.z))
+        
         plane.materials.first?.diffuse.contents = UIColor.cyan
         node.geometry = plane
         node.eulerAngles.x = -Float.pi/2
         node.name = "Plane"
         node.opacity = 0.25
+        node.addChildNode(focusSquare)
         
         return node
     }
@@ -296,8 +339,11 @@ extension ViewController {
         planeNode.geometry?.firstMaterial?.diffuse.contents = UIColor.green
         
     }
+    
+    func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
+        updateFocusSquare()
+    }
 }
-
 // MARK: - Configuration Methods
 extension ViewController {
     func reloadConfiguration(removeAnchors: Bool = true) {
