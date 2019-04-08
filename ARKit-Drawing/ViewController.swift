@@ -58,6 +58,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.debugOptions = [.showFeaturePoints]
         sceneView.scene.rootNode.addChildNode(focusSquare)
         focusSquare.isHidden = true
+        hideButtonsFromView(true)
         
         sceneView.delegate = self
         sceneView.autoenablesDefaultLighting = true
@@ -81,14 +82,17 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             objectMode = .freeform
             showPlaneOverlay = false
             focusSquare.isHidden = true
+            hideButtonsFromView(true)
         case 1:
             objectMode = .plane
             showPlaneOverlay = true
             focusSquare.isHidden = false
+            hideButtonsFromView(false)
         case 2:
             objectMode = .image
             showPlaneOverlay = false
             focusSquare.isHidden = true
+            hideButtonsFromView(true)
         default:
             break
         }
@@ -110,6 +114,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
     }
     @IBAction func minusButtonPressed(_ sender: UIButton) {
+        undoLastObject()
     }
     
     
@@ -372,4 +377,12 @@ extension ViewController {
         sceneView.session.run(configuration, options: options)
   
         }
+}
+
+// MARK: - Custom Methods
+extension ViewController {
+    func hideButtonsFromView(_ isHidden: Bool) {
+        plusButton.isHidden = isHidden
+        minusButton.isHidden = isHidden
+    }
 }
