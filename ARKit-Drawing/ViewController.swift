@@ -22,7 +22,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     var planeNodes = [SCNNode]()
     
     var drawingLine = [SCNNode]()
-    var drawing = [[SCNNode]()]
+    var drawing: [[SCNNode]] = []
     
     /// Coordinate of last placed point
     var lastObjectPlasedPoint: CGPoint?
@@ -104,6 +104,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             focusSquare.isHidden = true
             minusButton.isHidden = false
             plusButton.isHidden = true
+            if drawing.isEmpty {
+                minusButton.isHidden = true
+            }
             
         default:
             break
@@ -129,6 +132,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
     @IBAction func minusButtonPressed(_ sender: UIButton) {
         undoLastObject()
+        if drawing.isEmpty {
+            minusButton.isHidden = true
+        }
     }
     
     
@@ -247,6 +253,9 @@ extension ViewController {
         
         drawing.append(drawingLine)
         drawingLine.removeAll()
+        if !drawing.isEmpty {
+            minusButton.isHidden = false
+        }
         print("End of touch")
         lastObjectPlasedPoint = nil
     }
