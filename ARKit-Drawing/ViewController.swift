@@ -8,6 +8,9 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     @IBOutlet weak var plusButton: UIButton!
     @IBOutlet weak var minusButton: UIButton!
+    @IBOutlet weak var switchDrawVisualEffect: UIVisualEffectView!
+    
+    @IBOutlet weak var drawingSwitch: UISwitch!
     
     
     let configuration = ARWorldTrackingConfiguration()
@@ -16,12 +19,24 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     var selectedNode: SCNNode?
     
     /// Nodes placed by the user
-    var placedNodes = [SCNNode]()
+    var placedNodes = [SCNNode]() {
+        didSet{
+            showMinusButton()
+        }
+    }
     
     /// Visualisation planes placed when detecting planes
-    var planeNodes = [SCNNode]()
+    var planeNodes = [SCNNode]() {
+        didSet {
+            showMinusButton()
+        }
+    }
     
+    //Drawing
+    /// One line in drawind mode
     var drawingLine = [SCNNode]()
+    
+    /// All drawing lines
     var drawing: [[SCNNode]] = []
     
     /// Coordinate of last placed point
@@ -43,11 +58,16 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     var session: ARSession {
         return sceneView.session
     }
+    
     let updateQueue = DispatchQueue(label: "com.example.apple-samplecode.arkitexample.serialSceneKitQueue")
     
     var screenCenter: CGPoint {
-        let bounds = sceneView.bounds
-        return CGPoint(x: bounds.midX, y: bounds.midY)
+        var point = CGPoint()
+        DispatchQueue.main.async {
+            let bounds = self.sceneView.bounds
+            point = CGPoint(x: bounds.midX, y: bounds.midY)
+        }
+        return point
     }
     
     enum ObjectPlacementMode {
@@ -61,12 +81,26 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         reloadConfiguration(removeAnchors: false)
         sceneView.debugOptions = [.showFeaturePoints]
         sceneView.scene.rootNode.addChildNode(focusSquare)
+        //Default freeform
+        drawingSwitch.isOn = false
+        showPlaneOverlay = false
         focusSquare.isHidden = true
-        hideButtonsFromView(true)
+        plusButton.isHidden = false
+        showMinusButton()
+        showPlusButton()
+        switchDrawVisualEffect.isHidden = true
+        
         
         sceneView.delegate = self
         sceneView.autoenablesDefaultLighting = true
         
+        drawingSwitch.addTarget(self, action: #selector(drawingToggle), for: .valueChanged)
+    }
+    
+    @objc func drawingToggle() {
+        print("Swithed")
+        showPlusButton()
+        showMinusButton()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -85,29 +119,38 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         switch sender.selectedSegmentIndex {
         case 0:
             objectMode = .freeform
+            drawingSwitch.isOn = false
             showPlaneOverlay = false
             focusSquare.isHidden = true
-            hideButtonsFromView(true)
+            plusButton.isHidden = false
+            showMinusButton()
+            showPlusButton()
+            switchDrawVisualEffect.isHidden = true
+            
         case 1:
             objectMode = .plane
+            drawingSwitch.isOn = false
             showPlaneOverlay = true
             focusSquare.isHidden = false
-            hideButtonsFromView(false)
+            showMinusButton()
+            showPlusButton()
+            switchDrawVisualEffect.isHidden = true
         case 2:
             objectMode = .image
+            drawingSwitch.isOn = false
             showPlaneOverlay = false
             focusSquare.isHidden = true
-            hideButtonsFromView(true)
+            showMinusButton()
+            showPlusButton()
+            switchDrawVisualEffect.isHidden = false
         case 3:
             objectMode = .draw
+            drawingSwitch.isOn = true
             showPlaneOverlay = true
             focusSquare.isHidden = true
-            minusButton.isHidden = false
-            plusButton.isHidden = true
-            if drawing.isEmpty {
-                minusButton.isHidden = true
-            }
-            
+            showMinusButton()
+            showPlusButton()
+            switchDrawVisualEffect.isHidden = true
         default:
             break
         }
@@ -120,6 +163,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         switch objectMode {
         case .freeform:
             addNodeInFront(node)
+            break
         case .plane:
             addNode(node, to: screenCenter)
             break
@@ -132,9 +176,8 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
     @IBAction func minusButtonPressed(_ sender: UIButton) {
         undoLastObject()
-        if drawing.isEmpty {
-            minusButton.isHidden = true
-        }
+        showPlusButton()
+        showMinusButton()
     }
     
     
@@ -154,6 +197,7 @@ extension ViewController: OptionsViewControllerDelegate {
     func objectSelected(node: SCNNode) {
         dismiss(animated: true, completion: nil)
         selectedNode = node
+        showPlusButton()
     }
     
     func togglePlaneVisualization() {
@@ -162,14 +206,14 @@ extension ViewController: OptionsViewControllerDelegate {
     }
     
     func undoLastObject() {
-        if objectMode == .draw {
+        if objectMode == .draw || drawingSwitch.isOn {
             
             guard let line = drawing.last else { return }
             
-                    line.forEach{$0.removeFromParentNode()}
-                drawing.removeLast()
+            line.forEach{$0.removeFromParentNode()}
+            drawing.removeLast()
             
-            } else {
+        } else {
             guard let lastNode = placedNodes.last else {
                 dismiss(animated: true, completion: nil)
                 return }
@@ -197,8 +241,8 @@ extension ViewController {
         guard let node = selectedNode else { return }
         
         switch objectMode {
-        case .freeform:
-            addNodeInFront(node)
+        case .freeform: break
+        //            addNodeInFront(node)
         case .plane:
             //            let point = touch.location(in: sceneView)
             //            addNode(node, to: point)
@@ -217,7 +261,7 @@ extension ViewController {
         
         guard let touch = touches.first else { return }
         let newTouchPoint = touch.location(in: sceneView)
-        if objectMode == .draw {
+        if objectMode == .draw || drawingSwitch.isOn {
             
             let pencil = SCNNode(geometry: SCNCylinder(radius: 0.01, height: 0.001))
             pencil.geometry?.firstMaterial?.diffuse.contents = UIColor.black
@@ -253,10 +297,7 @@ extension ViewController {
         
         drawing.append(drawingLine)
         drawingLine.removeAll()
-        if !drawing.isEmpty {
-            minusButton.isHidden = false
-        }
-        print("End of touch")
+        showMinusButton()
         lastObjectPlasedPoint = nil
     }
 }
@@ -272,7 +313,7 @@ extension ViewController {
     func addNode(_  node: SCNNode, to parentNode: SCNNode, isFloor: Bool = false) {
         let cloneNode = isFloor ? node : node.clone()
         
-        if objectMode == .draw {
+        if objectMode == .draw || drawingSwitch.isOn {
             drawingLine.append(cloneNode)
             parentNode.addChildNode(cloneNode)
         } else {
@@ -450,8 +491,34 @@ extension ViewController {
 
 // MARK: - Custom Methods
 extension ViewController {
-    func hideButtonsFromView(_ isHidden: Bool) {
-        plusButton.isHidden = isHidden
-        minusButton.isHidden = isHidden
+    
+    func showMinusButton() {
+        if drawingSwitch.isOn {
+            if drawing.isEmpty {
+                minusButton.isEnabled = false
+                minusButton.alpha = 0.5
+            } else {
+                minusButton.isEnabled = true
+                minusButton.alpha = 1
+            }
+        } else {
+            if placedNodes.isEmpty {
+                minusButton.isEnabled = false
+                minusButton.alpha = 0.5
+            } else {
+                minusButton.isEnabled = true
+                minusButton.alpha = 1
+            }
+        }
+    }
+
+    func showPlusButton() {
+        if drawingSwitch.isOn || objectMode == .draw || objectMode == .image || selectedNode == nil  {
+            plusButton.isEnabled = false
+            plusButton.alpha = 0.5
+        } else {
+            plusButton.isEnabled = true
+            plusButton.alpha = 1
+        }
     }
 }
