@@ -15,7 +15,6 @@
 		BEDB2EDE200EABAD001C6BBC /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEDB2EDD200EABAD001C6BBC /* ViewController.swift */; };
 		BEDB2EE1200EABAD001C6BBC /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BEDB2EDF200EABAD001C6BBC /* Main.storyboard */; };
 		BEDB2EE3200EABAD001C6BBC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BEDB2EE2200EABAD001C6BBC /* Assets.xcassets */; };
-		BEDB2EE6200EABAD001C6BBC /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BEDB2EE4200EABAD001C6BBC /* LaunchScreen.storyboard */; };
 		BEDB2EEE200ECB94001C6BBC /* Options.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = BEDB2EED200ECB94001C6BBC /* Options.storyboard */; };
 		BEDB2EF0200ECC4C001C6BBC /* BasicShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEDB2EEF200ECC4C001C6BBC /* BasicShape.swift */; };
 		E40FC4472255A5CE00BE57F1 /* AR.png in Resources */ = {isa = PBXBuildFile; fileRef = E40FC4462255A5CE00BE57F1 /* AR.png */; };
@@ -29,6 +28,7 @@
 		E492596A225A7173008CED11 /* VirtualObjectLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4925968225A7173008CED11 /* VirtualObjectLoader.swift */; };
 		E492596B225A7173008CED11 /* VirtualObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4925969225A7173008CED11 /* VirtualObject.swift */; };
 		E492596F225A721A008CED11 /* VirtualObjectARView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E492596D225A721A008CED11 /* VirtualObjectARView.swift */; };
+		E4978AF8225DFC470056BA9C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E4978AF7225DFC470056BA9C /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,7 +41,6 @@
 		BEDB2EDD200EABAD001C6BBC /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		BEDB2EE0200EABAD001C6BBC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		BEDB2EE2200EABAD001C6BBC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		BEDB2EE5200EABAD001C6BBC /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		BEDB2EE7200EABAD001C6BBC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BEDB2EED200ECB94001C6BBC /* Options.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Options.storyboard; sourceTree = "<group>"; };
 		BEDB2EEF200ECC4C001C6BBC /* BasicShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BasicShape.swift; sourceTree = "<group>"; };
@@ -56,6 +55,7 @@
 		E4925968225A7173008CED11 /* VirtualObjectLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VirtualObjectLoader.swift; sourceTree = "<group>"; };
 		E4925969225A7173008CED11 /* VirtualObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VirtualObject.swift; sourceTree = "<group>"; };
 		E492596D225A721A008CED11 /* VirtualObjectARView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VirtualObjectARView.swift; sourceTree = "<group>"; };
+		E4978AF7225DFC470056BA9C /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,7 +99,7 @@
 				BEDB2EF1200ECF14001C6BBC /* Options */,
 				BEDB2EDB200EABAD001C6BBC /* models.scnassets */,
 				BEDB2EE2200EABAD001C6BBC /* Assets.xcassets */,
-				BEDB2EE4200EABAD001C6BBC /* LaunchScreen.storyboard */,
+				E4978AF7225DFC470056BA9C /* LaunchScreen.storyboard */,
 				E40FC44A2255A65F00BE57F1 /* fon.png */,
 				E40FC4462255A5CE00BE57F1 /* AR.png */,
 				BEDB2EE7200EABAD001C6BBC /* Info.plist */,
@@ -182,11 +182,12 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0920;
-				LastUpgradeCheck = 0930;
+				LastUpgradeCheck = 1020;
 				ORGANIZATIONNAME = "Chad Zeluff";
 				TargetAttributes = {
 					BEDB2ED5200EABAD001C6BBC = {
 						CreatedOnToolsVersion = 9.2;
+						LastSwiftMigration = 1020;
 						ProvisioningStyle = Automatic;
 					};
 				};
@@ -218,10 +219,10 @@
 				BEDB2EEE200ECB94001C6BBC /* Options.storyboard in Resources */,
 				E4327667225463CE00BEC286 /* README.md in Resources */,
 				E40FC44B2255A65F00BE57F1 /* fon.png in Resources */,
-				BEDB2EE6200EABAD001C6BBC /* LaunchScreen.storyboard in Resources */,
 				E40FC4472255A5CE00BE57F1 /* AR.png in Resources */,
 				BEDB2EE3200EABAD001C6BBC /* Assets.xcassets in Resources */,
 				BEDB2EE1200EABAD001C6BBC /* Main.storyboard in Resources */,
+				E4978AF8225DFC470056BA9C /* LaunchScreen.storyboard in Resources */,
 				E432766A2254640200BEC286 /* LICENSE.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -258,14 +259,6 @@
 				BEDB2EE0200EABAD001C6BBC /* Base */,
 			);
 			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
-		BEDB2EE4200EABAD001C6BBC /* LaunchScreen.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				BEDB2EE5200EABAD001C6BBC /* Base */,
-			);
-			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -321,7 +314,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -374,7 +367,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -396,7 +389,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.example.ARKit-Drawing";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -415,7 +408,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.example.ARKit-Drawing";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

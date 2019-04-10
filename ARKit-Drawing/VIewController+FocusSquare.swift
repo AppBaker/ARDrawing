@@ -19,6 +19,8 @@ extension ViewController {
 //            return CGPoint(x: bounds.midX, y: bounds.midY)
 //        }
         // Perform hit testing only when ARKit tracking is in a good state.
+        guard let screenCenter = screenCenter else { return }
+        
         if let camera = session.currentFrame?.camera, case .normal = camera.trackingState,
             let result = sceneView.hitTest(screenCenter, types: .existingPlaneUsingExtent).first {
             
